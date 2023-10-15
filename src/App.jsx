@@ -1,18 +1,21 @@
 import { Route, Routes } from "react-router-dom";
-import EmployeeList from "./components/EmployeeList";
-import Navbar from "./components/Navbar";
-import EmployeeForm from "./components/EmployeeForm";
+import EmployeeList from "./pages/EmployeeList";
+// import Navbar from "./components/Navbar";
+import EmployeeForm from "./pages/EmployeeForm";
+import LoginPage from "./pages/LoginPage";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
     <>
-      <Navbar />
-
       <div>
         <Routes>
-          <Route path="/" element={<EmployeeList />} />
-          <Route path="/create-employee" element={<EmployeeForm />} />
-          <Route path="/edit-empployee" element={<EmployeeForm />} />
+          <Route path="/" element={<LoginPage />} />
+
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/employees" element={<EmployeeList />} />
+          <Route path="/employees/create" element={<EmployeeForm />} />
+          <Route path="/employees/:employeeId" element={<EmployeeForm />} />
         </Routes>
       </div>
     </>
