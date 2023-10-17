@@ -26,6 +26,7 @@ const Navbar = () => {
               Employees
             </Link>
           </li>
+
           <li>
             <button onClick={logout} className=" py-2 pl-3 pr-4 text-white ">
               Logout

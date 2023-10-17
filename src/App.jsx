@@ -16,6 +16,7 @@ function App() {
           <Route path="/employees" element={<EmployeeList />} />
           <Route path="/employees/create" element={<EmployeeForm />} />
           <Route path="/employees/:employeeId" element={<EmployeeForm />} />
+          <Route path="*" element={<div>Page not found</div>} />
         </Routes>
       </div>
     </>

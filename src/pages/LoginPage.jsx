@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   async function login() {
@@ -19,6 +20,7 @@ const LoginPage = () => {
       const data = await resp.json();
       if (data.data?.user) {
         localStorage.setItem("token", `Bearer ${data.data.token}`);
+        localStorage.setItem("loggedInUser", JSON.stringify(data.data.user));
         navigate("/dashboard");
       } else {
         alert(data.message);
@@ -30,6 +32,14 @@ const LoginPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const regExp = /^(?:.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9]{8,}$/;
+    if (password === "") {
+      setErrorMessage("please enter password");
+    } else if (!regExp.test(password)) {
+      setErrorMessage("password is not Valid");
+    } else {
+      setErrorMessage("");
+    }
     login();
   };
   return (
@@ -68,6 +78,7 @@ const LoginPage = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
+                  <p className="text-xs text-red-700">{errorMessage}</p>
                 </div>
 
                 <button

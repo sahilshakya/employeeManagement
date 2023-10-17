@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate, useParams } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const EmployeeForm = () => {
   const navigate = useNavigate();
@@ -12,6 +14,7 @@ const EmployeeForm = () => {
 
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [role, setRole] = useState(false);
 
   // const [role, setRole] = useState("");
 
@@ -31,7 +34,8 @@ const EmployeeForm = () => {
     // console.log(data);
 
     if (data) {
-      // navigate("/employees");
+      navigate("/employees");
+      toast.success("Employee Added");
     }
   }
 
@@ -48,6 +52,7 @@ const EmployeeForm = () => {
     const data = await resp.json();
     if (data) {
       navigate("/employees");
+      toast.success("Employee updated");
     }
   }
   const submit = async (e) => {
@@ -59,13 +64,23 @@ const EmployeeForm = () => {
       password,
       phone,
       address,
+      role,
     };
     employeeId ? update(userData) : create(userData);
   };
 
   useEffect(() => {
     async function getEmployeeById() {
-      const resp = await fetch(`http://localhost:8000/api/users/${employeeId}`);
+      const resp = await fetch(
+        `http://localhost:8000/api/users/${employeeId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: localStorage.getItem("token"),
+          },
+        }
+      );
       const data = await resp.json();
       // console.log(data.data);
       setFirstName(data.data.firstName);
@@ -73,8 +88,9 @@ const EmployeeForm = () => {
       setEmail(data.data.email);
       setPhone(data.data.phone);
       setAddress(data.data.address);
+      setRole(data.data.role);
     }
-    getEmployeeById();
+    if (employeeId) getEmployeeById();
   }, [employeeId]);
   return (
     <div>
@@ -129,12 +145,6 @@ const EmployeeForm = () => {
           </>
         )}
 
-        {/* <label className="text-gray-700 text-lg font-bold mb-4">Role</label>
-        <select className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 ">
-          <option selected>Choose a role</option>
-          <option value="admin">Admin</option>
-          <option value="employee">Employee</option>
-        </select> */}
         <label className="text-gray-700 text-lg font-bold mb-4">Phone</label>
         <input
           className="w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-4  focus:bg-white"
@@ -152,6 +162,15 @@ const EmployeeForm = () => {
           value={address}
           onChange={(e) => setAddress(e.target.value)}
         />
+        <label className="text-gray-700 text-lg font-bold mb-4">Role</label>
+        <select
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 "
+        >
+          <option value="Admin">Admin</option>
+          <option value="Employee">Employee</option>
+        </select>
 
         <button
           className="bg-blue-500 p-3 rounded-lg text-white text-lg mt-3"

@@ -1,15 +1,19 @@
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
-// import axios from "axios";
+import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
+  const [search, setSearch] = useState("");
+
   const getEmployees = async () => {
-    const resp = await fetch("http://localhost:8000/api/users");
-    const data = await resp.json();
-    // console.log(data.data);
-    setEmployees(data.data);
+    const resp = await axios.get("http://localhost:8000/api/users");
+    // console.log(resp.data);
+
+    setEmployees(resp.data.data);
   };
 
   const handleDelete = async (id) => {
@@ -22,11 +26,11 @@ const EmployeeList = () => {
     });
 
     const data = await resp.json();
-    setEmployees((existingEmployees) => {
-      existingEmployees.filter((employee) => {
-        employee._id !== data.data._id;
-      });
-    });
+
+    setEmployees((existingEmployees) =>
+      existingEmployees.filter((employee) => employee._id !== data.data._id)
+    );
+    toast.success("employee deleted");
   };
 
   useEffect(() => {
@@ -49,6 +53,7 @@ const EmployeeList = () => {
           <input
             placeholder="Search"
             className="border border-gray-500 bg-gray-100  text-lg rounded-lg p-2"
+            onChange={(e) => setSearch(e.target.value)}
           />
         </div>
       </div>
@@ -64,30 +69,42 @@ const EmployeeList = () => {
             </tr>
           </thead>
           <tbody>
-            {employees.map((employee) => (
-              <tr key={employee._id}>
-                <td>
-                  {employee.firstName} {employee.lastName}
-                </td>
-                <td>{employee.email}</td>
-                <td>{employee.isAdmin ? "Admin" : "Employee"}</td>
+            {employees
+              ?.filter((employee) => {
+                return search.toLowerCase() === ""
+                  ? employee
+                  : employee.firstName.toLowerCase().includes(search) ||
+                      employee.lastName.toLowerCase().includes(search) ||
+                      employee.email.toLowerCase().includes(search);
+              })
+              .map((employee) => (
+                <tr key={employee._id}>
+                  <td>
+                    {employee.firstName} {employee.lastName}
+                  </td>
+                  <td>{employee.email}</td>
+                  <td>{employee.role}</td>
 
-                <td className="">
-                  <Link
-                    to={`/employees/${employee._id}`}
-                    className="border border-gray-200 p-3 rounded-md bg-green-400 text-white text-bold mr-2"
-                  >
-                    Update
-                  </Link>
-                  <button
-                    className="border border-gray-200 p-3 rounded-md bg-red-600 text-white text-boldds"
-                    onClick={() => handleDelete(employee._id)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+                  <td className="">
+                    <Link
+                      to={`/employees/${employee._id}`}
+                      className="border border-gray-200 p-3 rounded-md bg-green-400 text-white text-bold mr-2"
+                    >
+                      Update
+                    </Link>
+                    <button
+                      className="border border-gray-200 p-3 rounded-md bg-red-600 text-white text-boldds"
+                      onClick={() => handleDelete(employee._id)}
+                      disabled={
+                        JSON.parse(localStorage.getItem("loggedInUser"))._id ===
+                        employee._id
+                      }
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
