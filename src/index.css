@@ -2,3 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+tr, td, th{
+    border: 2px solid #DADADA;
+    
+}
+
+th.sorted-asc::after {
+    content: " ▲";
+  }
+  
+  th.sorted-desc::after {
+    content: " ▼";
+  }

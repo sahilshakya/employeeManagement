@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate, useParams } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const EmployeeForm = () => {
@@ -15,11 +15,52 @@ const EmployeeForm = () => {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [role, setRole] = useState(false);
+  // const [fnameError, setfnameError] = useState("");
+  // const [lnameError, setlnameError] = useState("");
+  // const [emailError, setemailError] = useState("");
+  // const [phoneError, setphoneError] = useState("");
+  // const [addressError, setaddressError] = useState("");
+  // const [passwordError, setpasswordError] = useState("");
 
-  // const [role, setRole] = useState("");
+  // const [message, setMessage] = useState("");
 
   const { employeeId } = useParams();
   // console.log(employeeId);
+
+  // const validateForm = () => {
+  //   if (firstName.trim() === "") {
+  //     setfnameError("First Name is required");
+  //     return false;
+  //   }
+  //   setfnameError("");
+  //   if (lastName.trim() === "") {
+  //     setlnameError(" Last Name is required");
+  //     return false;
+  //   }
+  //   setlnameError("");
+  //   if (email.trim() === "") {
+  //     setemailError(" Email is required");
+  //     return false;
+  //   }
+  //   setemailError("");
+  //   if (address.trim() === "") {
+  //     setaddressError(" Address is required");
+  //     return false;
+  //   }
+  //   setaddressError("");
+  //   if (phone.toString().trim === "") {
+  //     setphoneError(" 10 digit Phone is required");
+  //     return false;
+  //   }
+  //   setphoneError("");
+
+  //   if (password.trim() === "") {
+  //     setpasswordError(" Password is required");
+  //     return false;
+  //   }
+  //   setpasswordError("");
+  //   return true;
+  // };
 
   async function create(userData) {
     const resp = await fetch(`http://localhost:8000/api/users`, {
@@ -57,6 +98,7 @@ const EmployeeForm = () => {
   }
   const submit = async (e) => {
     e.preventDefault();
+    // const isValid = validateForm();
     const userData = {
       firstName,
       lastName,
@@ -66,7 +108,17 @@ const EmployeeForm = () => {
       address,
       role,
     };
+    // const emailRgExp = /^[a-zA-Z0-9._]+[a-z]+\.[a-z]{2-6}&/;
+    // if (emailRgExp.test(email)) {
+    //   setMessage("Email is invalid");
+    // } else if (email === "") {
+    //   setMessage("Please enter Email");
+    // } else {
+    //   setMessage("");
+    // }
+    // if (isValid) {
     employeeId ? update(userData) : create(userData);
+    // }
   };
 
   useEffect(() => {
@@ -109,10 +161,13 @@ const EmployeeForm = () => {
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
         />
+        {/* {fnameError && <p className="text-red-600 text-xs">{fnameError}</p>} */}
+
         <label className="text-gray-700 text-lg font-bold mb-4">
           {" "}
           Last Name
         </label>
+
         <input
           className="w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-4  focus:bg-white"
           type="text"
@@ -120,6 +175,8 @@ const EmployeeForm = () => {
           placeholder="Employee Last Name"
           onChange={(e) => setLastName(e.target.value)}
         />
+        {/* {lnameError && <p className="text-red-600 text-xs">{lnameError}</p>} */}
+
         <label className="text-gray-700 text-lg font-bold mb-4">Email</label>
         <input
           className="w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-4  focus:bg-white"
@@ -129,6 +186,8 @@ const EmployeeForm = () => {
           onChange={(e) => setEmail(e.target.value)}
           disabled={employeeId ? true : false}
         />
+        {/* {emailError && <p className="text-red-600 text-xs">{emailError}</p>} */}
+
         {!employeeId && (
           <>
             <label className="text-gray-700 text-lg font-bold mb-4">
@@ -142,6 +201,9 @@ const EmployeeForm = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            {/* {passwordError && (
+              <p className="text-red-600 text-xs">{passwordError}</p>
+            )} */}
           </>
         )}
 
@@ -153,6 +215,7 @@ const EmployeeForm = () => {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
         />
+        {/* {phoneError && <p className="text-red-600 text-xs">{phoneError}</p>} */}
 
         <label className="text-gray-700 text-lg font-bold mb-4">Address</label>
         <input
@@ -162,6 +225,8 @@ const EmployeeForm = () => {
           value={address}
           onChange={(e) => setAddress(e.target.value)}
         />
+        {/* {addressError && <p className="text-red-600 text-xs">{addressError}</p>} */}
+
         <label className="text-gray-700 text-lg font-bold mb-4">Role</label>
         <select
           value={role}
