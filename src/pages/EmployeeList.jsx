@@ -1,14 +1,16 @@
 import { Link } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useAuth } from "../contexts/AuthContext";
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState("");
+
+  const { user, token } = useAuth();
 
   const getEmployees = async () => {
     const resp = await axios.get("http://localhost:8000/api/users");
@@ -22,7 +24,7 @@ const EmployeeList = () => {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        Authorization: localStorage.getItem("token"),
+        Authorization: token,
       },
     });
 
@@ -60,7 +62,6 @@ const EmployeeList = () => {
 
   return (
     <>
-      <Navbar />
       <div className=" flex justify-between p-5 ">
         <Link to="/employees/create">
           <button
@@ -228,10 +229,7 @@ const EmployeeList = () => {
                     <button
                       className="border border-gray-200 p-3 rounded-md bg-red-600 text-white text-boldds"
                       onClick={() => handleDelete(employee._id)}
-                      disabled={
-                        JSON.parse(localStorage.getItem("loggedInUser"))._id ===
-                        employee._id
-                      }
+                      disabled={user?._id === employee._id}
                     >
                       Delete
                     </button>

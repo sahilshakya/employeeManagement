@@ -1,47 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+// import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 // import { ToastContainer, toast } from "react-toastify";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  // const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
-  async function login() {
-    try {
-      const resp = await fetch("http://localhost:8000/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await resp.json();
-      if (data.data?.user) {
-        localStorage.setItem("token", `Bearer ${data.data.token}`);
-        localStorage.setItem("loggedInUser", JSON.stringify(data.data.user));
-        navigate("/dashboard");
-      } else {
-        alert(data.message);
-      }
-    } catch (err) {
-      alert(err.message);
-    }
-  }
+  const { login, user, isAuthenticated } = useAuth();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const regExp = /^(?:.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9]{8,}$/;
-    if (password === "") {
-      setErrorMessage("please enter password");
-    } else if (!regExp.test(password)) {
-      setErrorMessage("password is not Valid");
-    } else {
-      setErrorMessage("");
-    }
-    login();
+    // const regExp = /^(?:.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9]{8,}$/;
+    // if (password === "") {
+    //   setErrorMessage("please enter password");
+    // } else if (!regExp.test(password)) {
+    //   setErrorMessage("password is not Valid");
+    // } else {
+    //   setErrorMessage("");
+    // }
+    await login(email, password);
   };
+
+  useEffect(
+    function () {
+      if (isAuthenticated && user?.role.toLowerCase() === "admin")
+        navigate("/dashboard");
+      if (isAuthenticated && user?.role.toLowerCase() === "employee")
+        navigate("/change-password");
+    },
+    [isAuthenticated, user?.role, navigate]
+  );
+
   return (
     <>
       <section className="bg-gray-700">
@@ -73,12 +66,12 @@ const LoginPage = () => {
                   </label>
                   <input
                     type="password"
-                    placeholder="Emter your Password"
+                    placeholder="Enter your Password"
                     className=" border  rounded-lg  w-full p-2.5 bg-gray-700 border-gray-600  text-white "
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                  <p className="text-xs text-red-700">{errorMessage}</p>
+                  {/* <p className="text-xs text-red-700">{errorMessage}</p> */}
                 </div>
 
                 <button

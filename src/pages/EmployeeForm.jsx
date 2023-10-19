@@ -1,20 +1,81 @@
-import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
+import { useEffect, useReducer } from "react";
+
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useAuth } from "../contexts/AuthContext";
+
+const initialState = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  phone: "",
+  address: "",
+  role: "Employee",
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "create":
+      return {
+        ...state,
+        firstName: action.payload.firstName,
+        lastName: action.payload.lastName,
+        email: action.payload.email,
+        password: action.payload.password,
+        phone: action.payload.phone,
+        address: action.payload.address,
+        role: action.payload.role,
+      };
+
+    case "firstName":
+      return {
+        ...state,
+        firstName: action.payload,
+      };
+    case "lastName":
+      return {
+        ...state,
+        lastName: action.payload,
+      };
+    case "email":
+      return {
+        ...state,
+        email: action.payload,
+      };
+    case "password":
+      return {
+        ...state,
+        password: action.payload,
+      };
+    case "address":
+      return {
+        ...state,
+        address: action.payload,
+      };
+    case "phone":
+      return {
+        ...state,
+        phone: action.payload,
+      };
+    case "role":
+      return {
+        ...state,
+        role: action.payload,
+      };
+
+    default:
+      throw new Error("Unkown action");
+  }
+}
 
 const EmployeeForm = () => {
   const navigate = useNavigate();
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { firstName, lastName, email, password, phone, address, role } = state;
+  const { token } = useAuth();
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [role, setRole] = useState(false);
   // const [fnameError, setfnameError] = useState("");
   // const [lnameError, setlnameError] = useState("");
   // const [emailError, setemailError] = useState("");
@@ -129,25 +190,18 @@ const EmployeeForm = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            authorization: localStorage.getItem("token"),
+            authorization: token,
           },
         }
       );
       const data = await resp.json();
       // console.log(data.data);
-      setFirstName(data.data.firstName);
-      setLastName(data.data.lastName);
-      setEmail(data.data.email);
-      setPhone(data.data.phone);
-      setAddress(data.data.address);
-      setRole(data.data.role);
+      dispatch({ type: "create", payload: data.data });
     }
     if (employeeId) getEmployeeById();
-  }, [employeeId]);
+  }, [employeeId, token]);
   return (
     <div>
-      <Navbar />
-
       <h1 className="p-4 text-3xl">{employeeId ? "Update" : "Add"} Employee</h1>
 
       <form className="p-5">
@@ -159,7 +213,9 @@ const EmployeeForm = () => {
           type="text"
           placeholder="Employee First Name"
           value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
+          onChange={(e) =>
+            dispatch({ type: "firstName", payload: e.target.value })
+          }
         />
         {/* {fnameError && <p className="text-red-600 text-xs">{fnameError}</p>} */}
 
@@ -173,7 +229,9 @@ const EmployeeForm = () => {
           type="text"
           value={lastName}
           placeholder="Employee Last Name"
-          onChange={(e) => setLastName(e.target.value)}
+          onChange={(e) =>
+            dispatch({ type: "lastName", payload: e.target.value })
+          }
         />
         {/* {lnameError && <p className="text-red-600 text-xs">{lnameError}</p>} */}
 
@@ -183,7 +241,7 @@ const EmployeeForm = () => {
           type="email"
           placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => dispatch({ type: "email", payload: e.target.value })}
           disabled={employeeId ? true : false}
         />
         {/* {emailError && <p className="text-red-600 text-xs">{emailError}</p>} */}
@@ -199,7 +257,9 @@ const EmployeeForm = () => {
               type="password"
               placeholder="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) =>
+                dispatch({ type: "password", payload: e.target.value })
+              }
             />
             {/* {passwordError && (
               <p className="text-red-600 text-xs">{passwordError}</p>
@@ -213,7 +273,7 @@ const EmployeeForm = () => {
           type="number"
           placeholder="Phone Number"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          onChange={(e) => dispatch({ type: "phone", payload: e.target.value })}
         />
         {/* {phoneError && <p className="text-red-600 text-xs">{phoneError}</p>} */}
 
@@ -223,18 +283,20 @@ const EmployeeForm = () => {
           type="text"
           placeholder="Employee Address"
           value={address}
-          onChange={(e) => setAddress(e.target.value)}
+          onChange={(e) =>
+            dispatch({ type: "address", payload: e.target.value })
+          }
         />
         {/* {addressError && <p className="text-red-600 text-xs">{addressError}</p>} */}
 
         <label className="text-gray-700 text-lg font-bold mb-4">Role</label>
         <select
           value={role}
-          onChange={(e) => setRole(e.target.value)}
+          onChange={(e) => dispatch({ type: "role", payload: e.target.value })}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 "
         >
-          <option value="Admin">Admin</option>
-          <option value="Employee">Employee</option>
+          <option value="admin">Admin</option>
+          <option value="employee">Employee</option>
         </select>
 
         <button
