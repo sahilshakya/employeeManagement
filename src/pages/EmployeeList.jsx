@@ -10,17 +10,17 @@ const EmployeeList = () => {
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState("");
 
-  const { user, token } = useAuth();
+  const { user, token, BASE_URL } = useAuth();
 
   const getEmployees = async () => {
-    const resp = await axios.get("http://localhost:8000/api/users");
+    const resp = await axios.get(`${BASE_URL}/users`);
     // console.log(resp.data);
 
     setEmployees(resp.data.data);
   };
 
   const handleDelete = async (id) => {
-    const resp = await fetch(`http://localhost:8000/api/users/${id}`, {
+    const resp = await fetch(`${BASE_URL}/users/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

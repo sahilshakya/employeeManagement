@@ -41,7 +41,7 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <button onClick={logout} className=" py-2 pl-3 pr-4 text-white ">
+            <button onClick={logout} className="  pl-3 pr-4 text-white ">
               Logout
             </button>
           </li>

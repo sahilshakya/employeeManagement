@@ -74,7 +74,7 @@ const EmployeeForm = () => {
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(reducer, initialState);
   const { firstName, lastName, email, password, phone, address, role } = state;
-  const { token } = useAuth();
+  const { token, BASE_URL } = useAuth();
 
   // const [fnameError, setfnameError] = useState("");
   // const [lnameError, setlnameError] = useState("");
@@ -124,7 +124,7 @@ const EmployeeForm = () => {
   // };
 
   async function create(userData) {
-    const resp = await fetch(`http://localhost:8000/api/users`, {
+    const resp = await fetch(`${BASE_URL}/users`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -143,11 +143,11 @@ const EmployeeForm = () => {
 
   async function update(userData) {
     delete userData.password;
-    const resp = await fetch(`http://localhost:8000/api/users/${employeeId}`, {
+    const resp = await fetch(`${BASE_URL}/users/${employeeId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        authorization: localStorage.getItem("token"),
+        authorization:token,
       },
       body: JSON.stringify(userData),
     });
@@ -184,16 +184,13 @@ const EmployeeForm = () => {
 
   useEffect(() => {
     async function getEmployeeById() {
-      const resp = await fetch(
-        `http://localhost:8000/api/users/${employeeId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            authorization: token,
-          },
-        }
-      );
+      const resp = await fetch(`${BASE_URL}/users/${employeeId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: token,
+        },
+      });
       const data = await resp.json();
       // console.log(data.data);
       dispatch({ type: "create", payload: data.data });

@@ -1,25 +1,31 @@
 import { createContext, useContext, useReducer } from "react";
 
 const AuthContext = createContext();
-const BASE_URL = "";
+const BASE_URL = "http://localhost:8000/api";
 
-const initialState = {
-  user: null,
-  token: "",
-  isAuthenticated: false,
-  loading: false,
-};
+const initialState = localStorage.getItem("loggedInUser")
+  ? JSON.parse(localStorage.getItem("loggedInUser"))
+  : {
+      user: null,
+      token: "",
+      isAuthenticated: false,
+      loading: false,
+    };
 
 function reducer(state, action) {
   switch (action.type) {
-    case "login":
-      return {
+    case "login": {
+      const loggedInUser = {
         ...state,
         user: action.payload.user,
         token: `Bearer ${action.payload.token}`,
         isAuthenticated: true,
       };
+      localStorage.setItem("loggedInUser", JSON.stringify(loggedInUser));
+      return loggedInUser;
+    }
     case "logout":
+      localStorage.clear();
       return {
         ...state,
         user: null,
@@ -40,7 +46,7 @@ function AuthProvider({ children }) {
   async function login(email, password) {
     try {
       dispatch({ type: "loading", payload: true });
-      const resp = await fetch("http://localhost:8000/api/auth/login", {
+      const resp = await fetch(`${BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -13,7 +13,7 @@ function ChangePassword() {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        authorization: `${token}`,
+        authorization: token,
       },
       body: JSON.stringify({ oldPassword, newPassword }),
     });
